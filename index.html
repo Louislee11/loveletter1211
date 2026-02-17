@@ -35,9 +35,17 @@
   }
 
   @keyframes float {
-    0% {transform: translate(0,10px); opacity:0;}
-    10%,90% {opacity:1;}
-    100% {transform: translate(var(--x,0px),-10px); opacity:0;}
+    0% {
+      transform: translate(0,10px);
+      opacity:0;
+    }
+    10%, 90% {
+      opacity:1;
+    }
+    100% {
+      transform: translate(calc(var(--x,0px)), -50px); /* 往上移動50px */
+      opacity:0; /* 慢慢消失 */
+    }
   }
 
   .final {
@@ -91,7 +99,7 @@
 </div>
 
 <script>
-  const typingSpeed = 150; // 打字速度，單位 ms
+  const typingSpeed = 80; // 打字速度，單位 ms
 
   const bg = document.getElementById('background');
   for(let i=0;i<100;i++){
@@ -230,6 +238,7 @@
 </script>
 </body>
 </html>
+
 
 
 
