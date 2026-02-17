@@ -8,20 +8,9 @@
   * { margin:0; padding:0; box-sizing:border-box; }
   html, body { width:100%; height:100%; overflow:hidden; background:#000; font-family:'Segoe UI',sans-serif; }
 
-  /* 漸層 Nebula 背景 */
-  body {
-    background: radial-gradient(circle at 30% 30%, #1a1a2e, #0b0b1e 70%), radial-gradient(circle at 70% 70%, #2e1a2a, #0b0b1e 70%);
-    background-blend-mode: overlay;
-  }
-
-  #background { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none; overflow:hidden; }
-  .star {
-    position:absolute;
-    border-radius:50%;
-    animation:twinkle 2s infinite ease-in-out, moveStars linear infinite;
-  }
+  #background { position:fixed; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none; }
+  .star { position:absolute; width:2px; height:2px; background:#fff; border-radius:50%; animation:twinkle 2s infinite ease-in-out; }
   @keyframes twinkle {0%,100%{opacity:0.2;}50%{opacity:1;}}
-  @keyframes moveStars {0%{transform:translate(0,0);}100%{transform:translate(5px,-5px);}}
 
   .meteor { position:absolute; width:120px; height:2px; background:linear-gradient(to left, #fff, transparent); transform:rotate(45deg); animation:shoot 3s linear infinite; pointer-events:none; }
   @keyframes shoot { 0%{opacity:1;}100%{opacity:0; transform:translate(500px,500px) rotate(45deg);} }
@@ -46,9 +35,17 @@
   }
 
   @keyframes float {
-    0% {transform: translate(0,10px); opacity:0;}
-    10%, 90% {opacity:1;}
-    100% {transform: translate(var(--x,0px), -50px); opacity:0;}
+    0% {
+      transform: translate(0,10px);
+      opacity:0;
+    }
+    10%, 90% {
+      opacity:1;
+    }
+    100% {
+      transform: translate(calc(var(--x,0px)), -50px); /* 往上移動50px */
+      opacity:0; /* 慢慢消失 */
+    }
   }
 
   .final {
@@ -102,147 +99,146 @@
 </div>
 
 <script>
-const typingSpeed = 110; // 打字速度，可調整
+  const typingSpeed = 100; // 打字速度，單位 ms
 
-// 產生動態星星
-const bg = document.getElementById('background');
-for(let i=0;i<150;i++){
-  const s=document.createElement('div');
-  s.className='star';
-  const size = Math.random()*3+1; // 星星大小 1~4px
-  s.style.width = size+'px';
-  s.style.height = size+'px';
-  s.style.top = Math.random()*100+'vh';
-  s.style.left = Math.random()*100+'vw';
-  s.style.background = `hsl(${Math.random()*360}, 70%, 80%)`; // 星星顏色
-  s.style.animationDelay=Math.random()*3+'s';
-  s.style.animationDuration=(Math.random()*2+2)+'s';
-  bg.appendChild(s);
-}
-
-// 流星
-for(let i=0;i<22;i++){
-  const m=document.createElement('div');
-  m.className='meteor';
-  if(Math.random()<0.5){ m.style.left='-20%'; m.style.top=Math.random()*100+'vh'; }
-  else{ m.style.top='-20%'; m.style.left=Math.random()*100+'vw'; }
-  m.style.animationDelay=Math.random()*2+'s';
-  bg.appendChild(m);
-}
-
-// Fireworks canvas
-const canvas = document.getElementById('fireworks');
-const ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-class Particle {
-  constructor(x, y, color){
-    const angle = Math.random() * 2 * Math.PI;
-    const speed = Math.random() * 2 + 1.5;
-    this.x=x; this.y=y; this.dx=Math.cos(angle)*speed; this.dy=Math.sin(angle)*speed;
-    this.alpha=1; this.color=color; this.size=Math.random()*2+2;
+  const bg = document.getElementById('background');
+  for(let i=0;i<100;i++){
+    const s=document.createElement('div');
+    s.className='star';
+    s.style.top=Math.random()*100+'vh';
+    s.style.left=Math.random()*100+'vw';
+    s.style.animationDelay=Math.random()*3+'s';
+    bg.appendChild(s);
   }
-  update(){ this.x+=this.dx; this.y+=this.dy; this.alpha-=0.015; }
-  draw(){ ctx.globalAlpha=this.alpha; ctx.fillStyle=this.color; ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1; }
-}
+  for(let i=0;i<22;i++){
+    const m=document.createElement('div');
+    m.className='meteor';
+    if(Math.random()<0.5){
+      m.style.left='-20%';
+      m.style.top=Math.random()*100+'vh';
+    }else{
+      m.style.top='-20%';
+      m.style.left=Math.random()*100+'vw';
+    }
+    m.style.animationDelay=Math.random()*2+'s';
+    bg.appendChild(m);
+  }
 
-class Firework {
-  constructor(){
-    this.particles=[];
-    const x = Math.random()*canvas.width;
-    const y = Math.random()*canvas.height*0.5;
-    const baseHue = Math.floor(Math.random()*360);
-    for(let i=0;i<15;i++){
-      const color = `hsl(${(baseHue + Math.random()*60)%360},100%,60%)`;
-      this.particles.push(new Particle(x,y,color));
+  const canvas = document.getElementById('fireworks');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  class Particle {
+    constructor(x, y, color) {
+      const angle = Math.random() * 2 * Math.PI;
+      const speed = Math.random() * 2 + 1.5;
+      this.x = x; this.y = y; this.dx = Math.cos(angle) * speed; this.dy = Math.sin(angle) * speed;
+      this.alpha = 1; this.color = color; this.size = Math.random() * 2 + 2;
+    }
+    update() { this.x += this.dx; this.y += this.dy; this.alpha -= 0.015; }
+    draw() { ctx.globalAlpha = this.alpha; ctx.fillStyle = this.color; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI*2); ctx.fill(); ctx.globalAlpha=1; }
+  }
+
+  class Firework {
+    constructor() {
+      this.particles = [];
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height * 0.5;
+      const baseHue = Math.floor(Math.random() * 360);
+      for (let i=0;i<22;i++){
+        const color = `hsl(${(baseHue + Math.random()*60)%360},100%,60%)`;
+        this.particles.push(new Particle(x, y, color));
+      }
     }
   }
-}
 
-const fireworks=[];
-function animateFireworks(){
-  requestAnimationFrame(animateFireworks);
-  ctx.fillStyle='rgba(0,0,0,0.2)';
-  ctx.fillRect(0,0,canvas.width,canvas.height);
-  if(Math.random()<0.05) fireworks.push(new Firework());
-  fireworks.forEach((fw,i)=>{
-    fw.particles.forEach(p=>{p.update();p.draw();});
-    if(fw.particles.every(p=>p.alpha<=0)) fireworks.splice(i,1);
+  const fireworks = [];
+  function animateFireworks() {
+    requestAnimationFrame(animateFireworks);
+    ctx.fillStyle='rgba(0,0,0,0.2)';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    if(Math.random()<0.05) fireworks.push(new Firework());
+    fireworks.forEach((fw,i)=>{
+      fw.particles.forEach(p=>{p.update();p.draw();});
+      if(fw.particles.every(p=>p.alpha<=0)) fireworks.splice(i,1);
+    });
+  }
+
+  const letter = document.getElementById('letterBox');
+  const hint = document.getElementById('hint');
+  const msgC = document.getElementById('messageContainer');
+  const music = document.getElementById('bgMusic');
+  const controlButtons = document.getElementById('controlButtons');
+
+  const msgs = [
+    "嘿～我想大聲對你說",
+    "遇见你 認識你",
+    "我真的很開心",
+    "是你让我重新感受到温度",
+    "也是唯一让我卸下防备的人",
+    "沒向別人提起的秘密",
+    "也在不知不觉中告诉了你",
+    "和你在一起的时候",
+    "感覺連时间都变得柔软了",
+    "开始期待明天的到来",
+    "我才发现......",
+    "原来我仍然渴望被爱",
+    "原来我对爱情依然抱有期待~",
+    "曾经很長的一段时间里",
+    "我以为已经习惯一个人生活",
+    "日子过得還算可以吧",
+    "但是就是少了一点期待",
+    "直到我遇见了你",
+    "感覺就像是命运绕了一段",
+    "很遠很遠的路",
+    "把現在的我带到了你面前",
+    "如果你愿意",
+    "我想从今天开始",
+    "用更认真的身份陪在你身边",
+    "未来我也不知道會發生什麼",
+    "但我希望都能与你并肩走过",
+    "谢谢你出现在我的生命里",
+    "让我重新相信我有幸福的可能",
+    "所以嘛......",
+    "我喜歡你!!! 做我女朋友吧~"
+  ];
+
+  letter.addEventListener('click', async () => {
+    bg.innerHTML = '';
+    canvas.style.display='block';
+    animateFireworks();
+    letter.style.display='none';
+    hint.style.display='none';
+    await music.play().catch(()=>{});
+
+    for(let i=0;i<msgs.length;i++){
+      msgC.innerHTML='';
+      let div=document.createElement('div');
+      div.className = i===msgs.length-1 ? 'final' : 'message';
+      div.style.setProperty('--x', (Math.random()*20-10)+'px');
+      msgC.appendChild(div);
+      for(let j=1;j<=msgs[i].length;j++){
+        div.textContent = msgs[i].slice(0,j);
+        await new Promise(r=>setTimeout(r, typingSpeed));
+      }
+      await new Promise(r=>setTimeout(r,1000));
+    }
+    music.pause();
+    controlButtons.style.display='flex';
   });
-}
 
-// 文字動畫
-const letter = document.getElementById('letterBox');
-const hint = document.getElementById('hint');
-const msgC = document.getElementById('messageContainer');
-const music = document.getElementById('bgMusic');
-const controlButtons = document.getElementById('controlButtons');
-
-const msgs = [
-  "嘿～我想大聲對你說",
-  "遇见你 認識你",
-  "我真的很開心",
-  "是你让我重新感受到温度"
-  "也是唯一让我卸下防备的人",
-  "從沒向別人提起的秘密",
-  "也在不知不觉中告诉了你",
-  "和你在一起的时候",
-  "感覺連时间都变得柔软了",
-  "开始期待每一個明天的到来",
-  "我才发现......",
-  "原来我仍然渴望被爱",
-  "原来我对爱情",
-  "依然抱有期待~",
-  "曾经很長的一段时间里",
-  "我以为自己已经习惯一个人生活",
-  "日子过得還算可以吧",
-  "但是就是少了一点期待",
-  "直到我遇见了你",
-  "感覺就像是命运绕了一段"'
-  "很遠很遠的路",
-  "把現在的我带到了你面前",
-  "如果你愿意",
-  "我想从今天开始",
-  "用更认真的身份陪在你身边",
-  "未来我也不知道會發生什麼",
-  "但我希望都能与你并肩走过",
-  "谢谢你出现在我的生命里",
-  "让我重新相信我有幸福的可能",
-  "所以嘛......",
-  "我喜歡你!!! 做我女朋友吧 💌"
-];
-
-letter.addEventListener('click', async () => {
-  bg.innerHTML = '';
-  canvas.style.display='block';
-  animateFireworks();
-  letter.style.display='none';
-  hint.style.display='none';
-  await music.play().catch(()=>{});
-
-  for(let i=0;i<msgs.length;i++){
+  function replayLetter(){
+    controlButtons.style.display='none';
     msgC.innerHTML='';
-    let div=document.createElement('div');
-    div.className = i===msgs.length-1 ? 'final' : 'message';
-    div.style.setProperty('--x', (Math.random()*20-10)+'px');
-    msgC.appendChild(div);
-    for(let j=1;j<=msgs[i].length;j++){
-      div.textContent = msgs[i].slice(0,j);
-      await new Promise(r=>setTimeout(r, typingSpeed));
-    }
-    await new Promise(r=>setTimeout(r,1100));
+    letter.click();
   }
-  music.pause();
-  controlButtons.style.display='flex';
-});
 
-function replayLetter(){
-  controlButtons.style.display='none';
-  msgC.innerHTML='';
-  letter.click();
-}
-function returnMain(){ window.location.reload(); }
+  function returnMain(){ window.location.reload(); }
 </script>
 </body>
 </html>
+
+
+
+
