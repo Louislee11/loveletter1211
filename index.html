@@ -24,7 +24,7 @@
 
   #messageContainer { margin-top:20px; display:flex; flex-direction:column; align-items:center; }
   .message {
-    font-size:1.8rem;
+    font-size:1.7rem;
     white-space:nowrap;
     opacity:0;
     animation:float 4s ease-in-out, glow 3s ease-in-out infinite alternate;
@@ -92,14 +92,14 @@
   </div>
   <div id="messageContainer"></div>
   <div id="controlButtons" style="display:none;">
-    <button class="btn" onclick="replayLetter()">重播 🎬</button>
-    <button class="btn" onclick="returnMain()">返回 💌</button>
+    <button class="btn" onclick="replayLetter()">好 💌</button>
+    <button class="btn" onclick="returnMain()">Yes I do 💌</button>
   </div>
   <audio id="bgMusic" src="ai_ni.mp3" loop></audio>
 </div>
 
 <script>
-  const typingSpeed = 118; // 打字速度，單位 ms
+  const typingSpeed = 120; // 打字速度，單位 ms
 
   const bg = document.getElementById('background');
   for(let i=0;i<100;i++){
@@ -239,6 +239,7 @@ const msgs = [
 </script>
 </body>
 </html>
+
 
 
 
