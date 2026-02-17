@@ -132,7 +132,7 @@
   class Particle {
     constructor(x, y, color) {
       const angle = Math.random() * 2 * Math.PI;
-      const speed = Math.random() * 2;
+      const speed = Math.random() * 1.5;
       this.x = x; this.y = y; this.dx = Math.cos(angle) * speed; this.dy = Math.sin(angle) * speed;
       this.alpha = 1; this.color = color; this.size = Math.random() * 2 + 2;
     }
@@ -158,7 +158,7 @@
     requestAnimationFrame(animateFireworks);
     ctx.fillStyle='rgba(0,0,0,0.2)';
     ctx.fillRect(0,0,canvas.width,canvas.height);
-    if(Math.random()<0.03) fireworks.push(new Firework());
+    if(Math.random()<0.025) fireworks.push(new Firework());
     fireworks.forEach((fw,i)=>{
       fw.particles.forEach(p=>{p.update();p.draw();});
       if(fw.particles.every(p=>p.alpha<=0)) fireworks.splice(i,1);
@@ -222,7 +222,7 @@
         div.textContent = msgs[i].slice(0,j);
         await new Promise(r=>setTimeout(r, typingSpeed));
       }
-      await new Promise(r=>setTimeout(r,1000));
+      await new Promise(r=>setTimeout(r,950));
     }
     music.pause();
     controlButtons.style.display='flex';
@@ -238,6 +238,7 @@
 </script>
 </body>
 </html>
+
 
 
 
